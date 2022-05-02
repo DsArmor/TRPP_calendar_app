@@ -7,11 +7,6 @@ services:
     build: .
     ports:
       - "8080:8080"
-    healthcheck:
-      test: curl -sS http://localhost:8084 || echo 1
-      interval: 5s
-      timeout: 10s
-      retries: 3
     depends_on:
       - postgres
     environment:
@@ -19,6 +14,8 @@ services:
       SPRING_DATASOURCE_USERNAME: "argoc"
       SPRING_DATASOURCE_PASSWORD: "123"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "create-drop"
+    networks:
+      - postgres
 
   postgres:
     container_name: postgres_container_trpp
