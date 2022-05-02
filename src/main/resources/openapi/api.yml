@@ -5,26 +5,93 @@ info:
   description: project that will help you to manage your time
   version: 1.0.0
 
-# just an example
+servers:
+  - url: "localhost:{port}/{basePath}"
+    description: local server
+    variables:
+      port:
+        default: '8443'
+      basePath:
+        default: 'api/v1'
+
 paths:
-  /pets:
-    get:
-      description: Returns all pets from the system that the user has access to
+  /users:
+    post:
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      description: create an user
       responses:
         '200':
-          description: A list of pets.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/pet'
+          $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+
 
 components:
   schemas:
-    pet:
+    UserRequest:
       type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
       properties:
-        name:
+        email:
           type: string
-          description: Pet name
+          pattern: '^(.+)@(.+)$'
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+          minLength: 1
+        middleName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+    UserResponse:
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+    ErrorResponse:
+      description: Error with a message
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+          minLength: 1
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
