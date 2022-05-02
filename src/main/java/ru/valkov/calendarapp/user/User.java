@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ru.valkov.calendarapp.invite.Invite;
+import ru.valkov.calendarapp.meeting.Meeting;
 
 import javax.persistence.*;
 
@@ -12,8 +14,9 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Builder
-@Table(name = "users")
+@Table(name = "user")
 public class User {
+
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -24,6 +27,7 @@ public class User {
             sequenceName = "user_id_sequence",
             allocationSize = 1
     )
+    @Column(unique = true, nullable = false)
     private Long id;
     private String encodedPassword;
     private String email;
@@ -32,4 +36,13 @@ public class User {
     private String lastName;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+    // bidirectional to meeting table
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Meeting meeting;
+
+//    bidirectional to invite table
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Invite invite;
 }
