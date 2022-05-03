@@ -100,6 +100,8 @@
 								<sourceFolder>src/generated/java/main</sourceFolder>
 								<basePackage>${default.package}</basePackage>
 								<configPackage>${default.package}.configuration</configPackage>
+								<dateLibrary>java8</dateLibrary>
+								<interfaceOnly>true</interfaceOnly>
 								<performBeanValidation>true</performBeanValidation>
 							</configOptions>
 						</configuration>
