@@ -1,16 +1,13 @@
 package ru.valkov.calendarapp.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
 @Builder
 @Table(name = "users")
 public class User {
@@ -25,7 +22,7 @@ public class User {
             allocationSize = 1
     )
     private Long id;
-    private String encodedPassword;
+    private String password;
     private String email;
     private String firstName;
     private String middleName;
