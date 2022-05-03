@@ -33,7 +33,7 @@ public class UserMapper {
                 .firstName(response.getFirstName())
                 .middleName(response.getMiddleName())
                 .lastName(response.getLastName( ))
-                .status(UserStatus.ONLINE) // todo change to normal
+                .status(UserStatus.ONLINE)
                 .build();
     }
 }

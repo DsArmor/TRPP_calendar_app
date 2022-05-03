@@ -21,7 +21,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingMapper meetingMapper;
 
-    public Long createMeeting(MeetingRequest meetingRequest) { // todo exception
+    public Long createMeeting(MeetingRequest meetingRequest) {
         System.out.println(meetingRequest.getBeginDateTime());
         User user = userMapper.map(userService.getById(meetingRequest.getOwnerId()));
         Meeting meeting = meetingMapper.map(meetingRequest, user);
