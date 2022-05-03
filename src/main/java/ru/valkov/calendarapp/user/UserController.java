@@ -36,4 +36,9 @@ public class UserController implements UsersApi {
     public ResponseEntity<UserResponse> getUserById(Long userId) {
         return wrap(userService::getById, userId);
     }
+
+    @Override
+    public ResponseEntity<Void> updateUser(Long userId, UserRequest userRequest) {
+        return wrapWithoutResult(userService::updateById, userId, userRequest);
+    }
 }

@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: "localhost:{port}/{basePath}"
+  - url: "http://localhost:{port}/{basePath}"
     description: local server
     variables:
       port:
@@ -19,11 +19,7 @@ paths:
     post:
       operationId: createUser
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
+        $ref: '#/components/requestBodies/UserRequestBody'
       description: create an user
       responses:
         '200':
@@ -85,6 +81,22 @@ paths:
       responses:
         '200':
           description: user is deleted
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateUser
+      description: update user by id
+      requestBody:
+        $ref: '#/components/requestBodies/UserRequestBody'
+      responses:
+        '200':
+          description: user is successfully updated
         '400':
           $ref: '#/components/responses/Error'
         '404':
@@ -163,3 +175,11 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+  requestBodies:
+    UserRequestBody:
+      description: user details request body
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserRequest'
