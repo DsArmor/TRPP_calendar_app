@@ -28,7 +28,7 @@ public class Meeting {
     )
     @Column(unique = true, nullable = false)
     private Long id;
-    private String Name;
+    private String name;
     private LocalDateTime beginDateTime;
     private LocalDateTime endDateTime;
     private String location;

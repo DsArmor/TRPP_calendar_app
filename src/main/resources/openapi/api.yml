@@ -113,6 +113,34 @@ paths:
         schema:
           type: integer
           format: int64
+  /meeting:
+    post:
+      operationId: createMeeting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingRequest'
+      description: create a meeting
+      responses:
+        '200':
+          description: meeting is created
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    description: id of saved meeting
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
 
 
 components:
@@ -158,6 +186,48 @@ components:
           type: string
         lastName:
           type: string
+    MeetingRequest:
+      type: object
+      required:
+        - name
+        - beginDateTime
+        - endDateTime
+        - location
+        - description
+        - owner_id
+      properties:
+        name:
+          type: string
+          minLength: 1
+        beginDateTime:
+          type: string
+          format: date-time
+        endDateTime:
+          type: string
+          format: date-time
+        location:
+          type: string
+        description:
+          type: string
+        owner_id:
+          type: integer
+          format: int64
+    MeetingResponse:
+      required:
+        - id
+        - name
+        - beginDateTime
+        - endDateTime
+        - owner_id
+      properties:
+        name:
+          type: string
+        beginDateTime:
+          type: string
+        endDateTime:
+          type: string
+        owner_id:
+          type: integer
     ErrorResponse:
       description: Error with a message
       type: object
