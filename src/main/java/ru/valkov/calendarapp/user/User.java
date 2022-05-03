@@ -1,7 +1,6 @@
 package ru.valkov.calendarapp.user;
 
 import lombok.*;
-
 import javax.persistence.*;
 
 @Entity
