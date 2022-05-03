@@ -43,7 +43,18 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
-
+    get:
+      operationId: getUsers
+      description: get all users
+      responses:
+        '200':
+          description: list of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
 
 components:
   schemas:
@@ -70,6 +81,23 @@ components:
         lastName:
           type: string
           minLength: 1
+    UserResponse:
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
     ErrorResponse:
       description: Error with a message
       type: object

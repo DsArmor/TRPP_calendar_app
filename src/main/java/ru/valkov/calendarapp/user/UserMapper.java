@@ -2,6 +2,7 @@ package ru.valkov.calendarapp.user;
 
 import org.springframework.stereotype.Component;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
+import ru.valkov.calendarapp.openapi.model.UserResponse;
 
 @Component
 public class UserMapper {
@@ -14,5 +15,14 @@ public class UserMapper {
                 .lastName(request.getLastName())
                 .status(UserStatus.ONLINE)
                 .build();
+    }
+
+    public UserResponse map(User user) {
+        return new UserResponse()
+                .id(user.getId().intValue())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .middleName(user.getMiddleName())
+                .lastName(user.getLastName());
     }
 }
