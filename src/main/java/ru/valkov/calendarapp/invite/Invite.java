@@ -24,36 +24,38 @@ public class Invite {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "meeting_id_sequence"
+            generator = "invite_id_sequence"
     )
     @SequenceGenerator(
-            name = "meeting_id_sequence",
-            sequenceName = "meeting_id_sequence",
+            name = "invite_id_sequence",
+            sequenceName = "invite_id_sequence",
             allocationSize = 1 //what?
     )
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_id")
     private Meeting meeting;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     // One to Many
 //    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "user_id")
 //    private List<User> users = new ArrayList<>();
     // bidirectional to user
-    @OneToMany(
-            mappedBy = "invite",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<User> users = new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "invite",
+//            cascade = CascadeType.ALL,
+//            orphanRemoval = true
+//    )
+//    private List<User> users = new ArrayList<>();
     // end
 
     @Enumerated(EnumType.STRING)
     private MeetingDecisionStatus mdStatus;
-//    @Enumerated(EnumType.STRING)
-//    private UserOnMeetingStatus umStatus;
-    // UserStatus for this?
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 }

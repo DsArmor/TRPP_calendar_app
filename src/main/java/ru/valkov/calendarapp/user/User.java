@@ -14,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Builder
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -38,11 +38,11 @@ public class User {
     private UserStatus status;
 
     // bidirectional to meeting table
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private Meeting meeting;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    @PrimaryKeyJoinColumn
+//    private Meeting meeting;
 
 //    bidirectional to invite table
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Invite invite;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private Invite invite;
 }
