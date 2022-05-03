@@ -25,4 +25,15 @@ public class UserMapper {
                 .middleName(user.getMiddleName())
                 .lastName(user.getLastName());
     }
+
+    public User map(UserResponse response) {
+        return User.builder()
+                .id(response.getId())
+                .email(response.getEmail())
+                .firstName(response.getFirstName())
+                .middleName(response.getMiddleName())
+                .lastName(response.getLastName( ))
+                .status(UserStatus.ONLINE) // todo change to normal
+                .build();
+    }
 }

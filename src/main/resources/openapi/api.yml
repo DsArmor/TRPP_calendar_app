@@ -198,18 +198,16 @@ components:
         - name
         - beginDateTime
         - endDateTime
-        - owner_id
+        - ownerId
       properties:
         name:
           type: string
           minLength: 1
         beginDateTime:
           type: string
-          minLength: 1
           format: date-time
         endDateTime:
           type: string
-          minLength: 1
           format: date-time
         location:
           type: string
@@ -217,7 +215,7 @@ components:
         description:
           type: string
           minLength: 1
-        owner_id:
+        ownerId:
           type: integer
           format: int64
     MeetingResponse:
@@ -226,7 +224,8 @@ components:
         - name
         - beginDateTime
         - endDateTime
-        - owner_id
+        - owner
+        - ownerId
       properties:
         id:
           type: integer
@@ -243,7 +242,9 @@ components:
           type: string
         description:
           type: string
-        owner_id:
+        owner:
+          $ref: '#/components/schemas/UserResponse'
+        ownerId:
           type: integer
           format: int64
     ErrorResponse:
