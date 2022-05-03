@@ -28,10 +28,10 @@ public class Invite {
     )
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meeting_id")
+    @JoinColumn(name = "meeting_id", referencedColumnName = "id")
     private Meeting meeting;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     @Enumerated(EnumType.STRING)
     private MeetingDecisionStatus mdStatus;

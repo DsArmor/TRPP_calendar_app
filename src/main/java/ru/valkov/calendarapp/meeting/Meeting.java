@@ -34,7 +34,7 @@ public class Meeting {
     private String location;
     private String description;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
     @Enumerated(EnumType.STRING)
     private PeriodicityStatus status;
