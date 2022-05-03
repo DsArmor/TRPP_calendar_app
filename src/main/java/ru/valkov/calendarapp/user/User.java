@@ -1,19 +1,15 @@
 package ru.valkov.calendarapp.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
 @Builder
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -24,9 +20,8 @@ public class User {
             sequenceName = "user_id_sequence",
             allocationSize = 1
     )
-    @Column(unique = true, nullable = false)
     private Long id;
-    private String encodedPassword;
+    private String password;
     private String email;
     private String firstName;
     private String middleName;

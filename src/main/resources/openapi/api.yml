@@ -27,7 +27,16 @@ paths:
       description: create an user
       responses:
         '200':
-          $ref: '#/components/schemas/UserResponse'
+          description: user is created
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    description: id of saved user
         '400':
           $ref: '#/components/responses/Error'
         '403':
@@ -61,23 +70,6 @@ components:
         lastName:
           type: string
           minLength: 1
-    UserResponse:
-      required:
-        - id
-        - email
-        - firstName
-        - lastName
-      properties:
-        id:
-          type: integer
-        email:
-          type: string
-        firstName:
-          type: string
-        middleName:
-          type: string
-        lastName:
-          type: string
     ErrorResponse:
       description: Error with a message
       type: object
