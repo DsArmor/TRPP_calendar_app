@@ -1,8 +1,8 @@
 package ru.valkov.calendarapp.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.valkov.calendarapp.exceptions.NotFoundException;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 
@@ -27,5 +27,16 @@ public class UserService {
                 .stream()
                 .map(userMapper::map)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteById(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    public UserResponse getById(Long userId) {
+        return userRepository
+                .findById(userId)
+                .map(userMapper::map)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }

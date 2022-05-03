@@ -10,7 +10,7 @@ servers:
     description: local server
     variables:
       port:
-        default: '8443'
+        default: '8080'
       basePath:
         default: 'api/v1'
 
@@ -36,6 +36,7 @@ paths:
                 properties:
                   id:
                     type: integer
+                    format: int64
                     description: id of saved user
         '400':
           $ref: '#/components/responses/Error'
@@ -55,6 +56,52 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+  /users/{userId}:
+    get:
+      operationId: getUserById
+      description: get user by id
+      responses:
+        '200':
+          description: specified user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    delete:
+      operationId: deleteUserById
+      description: delete user by id
+      responses:
+        '200':
+          description: user is deleted
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+
 
 components:
   schemas:
@@ -90,6 +137,7 @@ components:
       properties:
         id:
           type: integer
+          format: int64
         email:
           type: string
         firstName:

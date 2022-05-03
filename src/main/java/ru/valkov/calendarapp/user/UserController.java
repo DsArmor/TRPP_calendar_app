@@ -9,6 +9,9 @@ import ru.valkov.calendarapp.openapi.model.UserResponse;
 
 import java.util.List;
 
+import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrap;
+import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResult;
+
 @RequiredArgsConstructor
 @Controller
 public class UserController implements UsersApi {
@@ -16,11 +19,21 @@ public class UserController implements UsersApi {
 
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
-        return ResponseEntity.ok(userService.createUser(userRequest));
+        return wrap(userService::createUser, userRequest);
     }
 
     @Override
     public ResponseEntity<List<UserResponse>> getUsers() {
-        return ResponseEntity.ok(userService.getUsers());
+        return wrap(userService::getUsers);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUserById(Long userId) {
+        return wrapWithoutResult(userService::deleteById, userId);
+    }
+
+    @Override
+    public ResponseEntity<UserResponse> getUserById(Long userId) {
+        return wrap(userService::getById, userId);
     }
 }

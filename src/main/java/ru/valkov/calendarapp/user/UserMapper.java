@@ -19,7 +19,7 @@ public class UserMapper {
 
     public UserResponse map(User user) {
         return new UserResponse()
-                .id(user.getId().intValue())
+                .id(user.getId())
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .middleName(user.getMiddleName())
