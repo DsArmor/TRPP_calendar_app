@@ -22,12 +22,10 @@ public class MeetingController implements MeetingApi {
     @Override
     public ResponseEntity<Object> createMeeting(MeetingRequest meetingRequest) {
         return wrap(meetingService::createMeeting, meetingRequest);
-//        return ResponseEntity.ok(meetingService.createMeeting(meetingRequest));
     }
 
     @Override
     public ResponseEntity<List<MeetingResponse>> getMeetings() {
         return wrap(meetingService::getMeetings);
-//        return ResponseEntity.ok(meetingService.getMeetings());
     }
 }
