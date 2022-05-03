@@ -198,8 +198,6 @@ components:
         - name
         - beginDateTime
         - endDateTime
-        - location
-        - description
         - owner_id
       properties:
         name:

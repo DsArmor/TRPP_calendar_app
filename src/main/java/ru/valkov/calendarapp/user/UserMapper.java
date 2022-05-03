@@ -12,7 +12,7 @@ public class UserMapper {
                 .password(request.getPassword())
                 .firstName(request.getFirstName())
                 .middleName(request.getMiddleName())
-                .lastName(request.getLastName())
+                .lastName(request.getLastName( ))
                 .status(UserStatus.ONLINE)
                 .build();
     }
