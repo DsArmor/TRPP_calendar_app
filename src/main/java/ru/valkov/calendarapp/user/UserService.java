@@ -39,4 +39,10 @@ public class UserService {
                 .map(userMapper::map)
                 .orElseThrow(() -> new NotFoundException("User not found"));
     }
+
+    public void updateById(Long userId, UserRequest userRequest) {
+        User updatedUser = userMapper.map(userRequest);
+        updatedUser.setId(userId);
+        userRepository.save(updatedUser);
+    }
 }
