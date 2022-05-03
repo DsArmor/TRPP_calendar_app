@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ru.valkov.calendarapp.invite.Invite;
-import ru.valkov.calendarapp.meeting.Meeting;
-
 import javax.persistence.*;
 
 @Entity
@@ -36,13 +33,4 @@ public class User {
     private String lastName;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
-
-    // bidirectional to meeting table
-//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-//    @PrimaryKeyJoinColumn
-//    private Meeting meeting;
-
-//    bidirectional to invite table
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Invite invite;
 }
