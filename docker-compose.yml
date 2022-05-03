@@ -13,7 +13,7 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres_container_trpp:5432/spring_db"
       SPRING_DATASOURCE_USERNAME: "argoc"
       SPRING_DATASOURCE_PASSWORD: "123"
-      SPRING_JPA_HIBERNATE_DDL_AUTO: "create-drop"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
     networks:
       - postgres
 

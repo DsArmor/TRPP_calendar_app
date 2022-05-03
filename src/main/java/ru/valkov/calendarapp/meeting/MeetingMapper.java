@@ -1,5 +1,6 @@
 package ru.valkov.calendarapp.meeting;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
@@ -9,12 +10,11 @@ import ru.valkov.calendarapp.user.UserMapper;
 
 import java.time.ZoneOffset;
 
+@RequiredArgsConstructor
 @Component
 public class MeetingMapper {
 
-    @Autowired
-    private UserMapper userMapper;
-
+    private final UserMapper userMapper;
     private final static ZoneOffset zone = ZoneOffset.UTC;
 
     public Meeting map(MeetingRequest request, User user) {
@@ -23,7 +23,7 @@ public class MeetingMapper {
                 .beginDateTime(request.getBeginDateTime().toLocalDateTime())
                 .endDateTime(request.getEndDateTime().toLocalDateTime())
                 .location(request.getDescription())
-                .owner(user) //todo add owner
+                .owner(user)
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class MeetingMapper {
         return new MeetingResponse()
                 .id(meeting.getId())
                 .name(meeting.getName())
-                .beginDateTime(meeting.getBeginDateTime().atOffset(zone)) // todo it is right?
+                .beginDateTime(meeting.getBeginDateTime().atOffset(zone))
                 .endDateTime(meeting.getEndDateTime().atOffset(zone))
                 .location(meeting.getLocation())
                 .description(meeting.getDescription())
