@@ -3,6 +3,10 @@ package ru.valkov.calendarapp.meeting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
+import ru.valkov.calendarapp.openapi.model.MeetingResponse;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +20,12 @@ public class MeetingService {
         return meeting.getId();
     }
 
-    public List<>
+    public List<MeetingResponse> getMeetings() {
+        return meetingRepository
+                .findAll()
+                .stream()
+                .map(meetingMapper::map)
+                .collect(Collectors.toList());
+    }
 
 }
