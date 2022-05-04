@@ -20,12 +20,27 @@ public class MeetingController implements MeetingApi {
     private final MeetingService meetingService;
 
     @Override
-    public ResponseEntity<Object> createMeeting(MeetingRequest meetingRequest) {
+    public ResponseEntity<Object> createMeeting(MeetingRequest meetingRequest) { // почему возвращаем Object а не Long
         return wrap(meetingService::createMeeting, meetingRequest);
     }
 
     @Override
     public ResponseEntity<List<MeetingResponse>> getMeetings() {
         return wrap(meetingService::getMeetings);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteMeetingById(Long meetingId) {
+        return wrapWithoutResult(meetingService::deleteById, meetingId);
+    }
+
+    @Override
+    public ResponseEntity<MeetingResponse> getMeetingById(Long meetingId) {
+        return wrap(meetingService::getById, meetingId);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateMeeting(Long meetingId, MeetingRequest meetingRequest) {
+        return wrapWithoutResult(meetingService::updateById, meetingId, meetingRequest); // можно ли сделать функцию wrap принимающей n-ое количество аргументов
     }
 }

@@ -1,9 +1,6 @@
 package ru.valkov.calendarapp.meeting;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.valkov.calendarapp.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@Data
 @Builder
 @Table(name = "meeting")
 public class Meeting {

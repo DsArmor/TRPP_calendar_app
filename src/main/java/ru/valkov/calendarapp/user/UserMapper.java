@@ -6,6 +6,7 @@ import ru.valkov.calendarapp.openapi.model.UserResponse;
 
 @Component
 public class UserMapper {
+
     public User map(UserRequest request) {
         return User.builder()
                 .email(request.getEmail())
