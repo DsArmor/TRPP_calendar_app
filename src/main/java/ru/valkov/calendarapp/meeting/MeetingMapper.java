@@ -22,12 +22,14 @@ public class MeetingMapper {
                 .name(request.getName())
                 .beginDateTime(request.getBeginDateTime().toLocalDateTime())
                 .endDateTime(request.getEndDateTime().toLocalDateTime())
-                .location(request.getDescription())
+                .location(request.getLocation())
+                .description(request.getDescription())
                 .owner(user)
+                .status(PeriodicityStatus.NONE)
                 .build();
     }
 
-    public MeetingResponse map(Meeting meeting) {
+    public MeetingResponse map(Meeting meeting) { // todo не возвращаем статус?
         return new MeetingResponse()
                 .id(meeting.getId())
                 .name(meeting.getName())
@@ -37,4 +39,5 @@ public class MeetingMapper {
                 .description(meeting.getDescription())
                 .owner(userMapper.map(meeting.getOwner()));
     }
+
 }
