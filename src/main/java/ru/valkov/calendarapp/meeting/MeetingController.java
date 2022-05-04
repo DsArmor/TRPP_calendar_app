@@ -20,7 +20,7 @@ public class MeetingController implements MeetingApi {
     private final MeetingService meetingService;
 
     @Override
-    public ResponseEntity<Object> createMeeting(MeetingRequest meetingRequest) { // почему возвращаем Object а не Long
+    public ResponseEntity<Object> createMeeting(MeetingRequest meetingRequest) {
         return wrap(meetingService::createMeeting, meetingRequest);
     }
 

@@ -1,5 +1,5 @@
 package ru.valkov.calendarapp.meeting;
 
-public enum PeriodicityStatus {
+public enum Periodicity {
     NONE, DAY, WEEK, MONTH
 }
