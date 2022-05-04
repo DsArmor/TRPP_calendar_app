@@ -3,7 +3,9 @@ package ru.valkov.calendarapp.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import ru.valkov.calendarapp.invite.InvitationService;
 import ru.valkov.calendarapp.openapi.controller.UsersApi;
+import ru.valkov.calendarapp.openapi.model.InviteRequest;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 
@@ -16,6 +18,7 @@ import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResul
 @Controller
 public class UserController implements UsersApi {
     private final UserService userService;
+    private final InvitationService invitationService;
 
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
@@ -40,5 +43,15 @@ public class UserController implements UsersApi {
     @Override
     public ResponseEntity<Void> updateUser(Long userId, UserRequest userRequest) {
         return wrapWithoutResult(userService::updateById, userId, userRequest);
+    }
+
+    @Override
+    public ResponseEntity<Object> createInvitation(Long userId, Long meetingId, InviteRequest inviteRequest) {
+        return wrap(invitationService::createInvitation, userId, meetingId, inviteRequest);
+    }
+
+    @Override
+    public ResponseEntity<List<UserResponse>> getInvitationByUserIdAndMeetingId(Long userId, Long meetingId) {
+        return UsersApi.super.getInvitationByUserIdAndMeetingId(userId, meetingId);
     }
 }
