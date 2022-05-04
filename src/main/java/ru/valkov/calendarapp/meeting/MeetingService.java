@@ -31,7 +31,7 @@ public class MeetingService {
         System.out.println(user);
         Meeting meeting = meetingMapper.map(meetingRequest, user);
         System.out.println(meeting);
-        meetingRepository.save(meeting);
+        meetingRepository.save(meeting); // todo не работает
         return meeting.getId();
     }
 
