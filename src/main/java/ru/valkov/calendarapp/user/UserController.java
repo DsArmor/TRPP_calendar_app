@@ -3,7 +3,10 @@ package ru.valkov.calendarapp.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.controller.UsersApi;
+import ru.valkov.calendarapp.openapi.model.MeetingRequest;
+import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 
@@ -16,6 +19,7 @@ import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResul
 @Controller
 public class UserController implements UsersApi {
     private final UserService userService;
+    private final MeetingService meetingService;
 
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
@@ -40,5 +44,30 @@ public class UserController implements UsersApi {
     @Override
     public ResponseEntity<Void> updateUser(Long userId, UserRequest userRequest) {
         return wrapWithoutResult(userService::updateById, userId, userRequest);
+    }
+
+    @Override
+    public ResponseEntity<Object> createMeeting(Long usersId, MeetingRequest meetingRequest) {
+        return wrap(meetingService::createMeeting, usersId, meetingRequest);
+    }
+
+    @Override
+    public ResponseEntity<List<MeetingResponse>> getMeetings(Long usersId) {
+        return wrap(meetingService::getMeetings, usersId);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteMeetingById(Long usersId, Long meetingId) {
+        return wrapWithoutResult(meetingService::deleteById, usersId,  meetingId);
+    }
+
+    @Override
+    public ResponseEntity<MeetingResponse> getMeetingById(Long usersId, Long meetingId) {
+        return wrap(meetingService::getById, usersId,  meetingId);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateMeeting(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
+        return wrapWithoutResult(meetingService::updateById, usersId, meetingId, meetingRequest);
     }
 }

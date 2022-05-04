@@ -36,8 +36,6 @@ paths:
                     description: id of saved user
         '400':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
     get:
@@ -54,8 +52,6 @@ paths:
                   $ref: '#/components/schemas/UserResponse'
         '400':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
   /users/{userId}:
@@ -71,7 +67,7 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           $ref: '#/components/responses/Error'
-        '403':
+        '404':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
@@ -84,8 +80,6 @@ paths:
         '400':
           $ref: '#/components/responses/Error'
         '404':
-          $ref: '#/components/responses/Error'
-        '403':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
@@ -101,8 +95,6 @@ paths:
           $ref: '#/components/responses/Error'
         '404':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
     parameters:
@@ -113,7 +105,7 @@ paths:
         schema:
           type: integer
           format: int64
-  /meeting:
+  /users/{userId}/meeting:
     post:
       operationId: createMeeting
       requestBody:
@@ -134,8 +126,6 @@ paths:
                     description: id of saved meeting
         '400':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
     get:
@@ -152,11 +142,17 @@ paths:
                   $ref: '#/components/schemas/MeetingResponse'
         '400':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
-  /meeting/{meetingId}:
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+  /users/{userId}/meeting/{meetingId}:
     get:
       operationId: getMeetingById
       description: get meeting by id
@@ -169,7 +165,7 @@ paths:
                 $ref: '#/components/schemas/MeetingResponse'
         '400':
           $ref: '#/components/responses/Error'
-        '403':
+        '404':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
@@ -182,8 +178,6 @@ paths:
         '400':
           $ref: '#/components/responses/Error'
         '404':
-          $ref: '#/components/responses/Error'
-        '403':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
@@ -199,11 +193,16 @@ paths:
           $ref: '#/components/responses/Error'
         '404':
           $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
     parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
       - name: meetingId
         description: meeting id
         required: true
@@ -211,7 +210,6 @@ paths:
         schema:
           type: integer
           format: int64
-
 
 components:
   schemas:
@@ -262,7 +260,6 @@ components:
         - name
         - beginDateTime
         - endDateTime
-        - ownerId
       properties:
         name:
           type: string
@@ -279,9 +276,6 @@ components:
         description:
           type: string
           minLength: 1
-        ownerId:
-          type: integer
-          format: int64
     MeetingResponse:
       required:
         - id
