@@ -35,7 +35,7 @@ public class MeetingService {
         return meeting.getId();
     }
 
-    public List<MeetingResponse> getMeetings(Long usersId) { // todo возвращать только встречи для конкретного пользователя
+    public List<MeetingResponse> getMeetings(Long usersId) {
         return meetingRepository
                 .findAllJoinUserId(usersId)
                 .stream()
@@ -43,20 +43,20 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(Long usersId, Long meetingId) { // todo удалять только встречу конкретного юзера
+    public void deleteById(Long usersId, Long meetingId) { // todo удалять только встречу конкретного юзера, хотя она не зависит от usersId поэтому можно его не юзать?
         meetingRepository.deleteById(meetingId);
     }
 
     public MeetingResponse getById(Long usersId, Long meetingId) {
         return meetingMapper
                 .map(meetingRepository.findByIdJoinUserId(usersId, meetingId));
-//                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+//                .orElseThrow(() -> new NotFoundException("Meeting not found")); // как-то надо прикрутить
     }
 
     public void updateById(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
         validateMeetingTime(meetingRequest.getBeginDateTime().toLocalDateTime(),
                 meetingRequest.getEndDateTime().toLocalDateTime());
-        User owner = userMapper.map(getById(usersId, meetingId).getOwner());
+        User owner = userMapper.map(userService.getById(usersId));
         Meeting updatedMeeting = meetingMapper.map(meetingRequest, owner);
         // метод update нуждается в доработке согласно таске об оповещении юзеров измененении времени встречи
         updatedMeeting.setId(meetingId);
