@@ -73,7 +73,7 @@ public class UserController implements UsersApi {
     @Override
     public ResponseEntity<Void> updateMeeting(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
         return wrapWithoutResult(meetingService::updateById, usersId, meetingId, meetingRequest);
-
+    }
     @Override
     public ResponseEntity<Object> createInvitation(Long userId, Long meetingId, InviteRequest inviteRequest) {
         return wrap(invitationService::createInvitation, userId, meetingId, inviteRequest);

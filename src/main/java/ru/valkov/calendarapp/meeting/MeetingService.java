@@ -31,11 +31,12 @@ public class MeetingService {
         System.out.println(user);
         Meeting meeting = meetingMapper.map(meetingRequest, user);
         System.out.println(meeting);
-        meetingRepository.save(meeting); // todo не работает
+        meetingRepository.save(meeting);
         return meeting.getId();
     }
 
     public List<MeetingResponse> getMeetings(Long usersId) {
+        userService.getById(usersId);
         return meetingRepository
                 .findAllJoinUserId(usersId)
                 .stream()

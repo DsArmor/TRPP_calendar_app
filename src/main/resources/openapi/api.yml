@@ -105,7 +105,7 @@ paths:
         schema:
           type: integer
           format: int64
-  /users/{userId}/meeting:
+  /users/{userId}/meetings:
     post:
       operationId: createMeeting
       requestBody:
@@ -152,7 +152,7 @@ paths:
         schema:
           type: integer
           format: int64
-  /users/{userId}/meeting/{meetingId}:
+  /users/{userId}/meetings/{meetingId}:
     get:
       operationId: getMeetingById
       description: get meeting by id

@@ -22,7 +22,7 @@ public class InvitationService {
 
     public Long createInvitation(Long userId, Long meetingId, InviteRequest inviteRequest) {
         User invitedUser = userMapper.map(userService.getById(userId));
-        Meeting meeting = meetingMapper.map(meetingService.getById(meetingId), invitedUser);
+        Meeting meeting = meetingMapper.map(meetingService.getById(userId, meetingId), invitedUser);
         Invitation invitation = invitationMapper.map(inviteRequest, invitedUser, meeting);
         invitationRepository.save(invitation);
         return invitation.getId();

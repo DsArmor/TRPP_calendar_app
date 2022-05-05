@@ -30,7 +30,7 @@ public class Meeting {
     private LocalDateTime endDateTime;
     private String location;
     private String description;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
     @Enumerated(EnumType.STRING)
