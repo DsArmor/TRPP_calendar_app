@@ -41,6 +41,16 @@ public class ExceptionWrapper {
         }
     }
 
+    public static <A,B,C,R> ResponseEntity<R> wrap(TriFunction<A,B,C,R> function, A arg1, B arg2, C arg3) {
+        try {
+            return ResponseEntity.ok(function.get(arg1, arg2, arg3));
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     public static <T> ResponseEntity<Void> wrapWithoutResult(Consumer<T> function, T arg) {
         try {
             function.accept(arg);
@@ -80,4 +90,7 @@ public class ExceptionWrapper {
         }
     }
 
+  public interface TriFunction<A,B,C,R> {
+        R get(A a, B b, C c);
+    }
 }

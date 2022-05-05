@@ -210,6 +210,63 @@ paths:
         schema:
           type: integer
           format: int64
+  /users/{userId}/meetings/{meetingId}/invitations:
+    post:
+      operationId: createInvitation
+      requestBody:
+        $ref: '#/components/requestBodies/InviteRequestBody'
+      description: invite user on a meeting
+      responses:
+        '200':
+          description: the invitation is sent
+          content:
+            application/json:
+              schema:
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    get:
+      operationId: getInvitationByUserIdAndMeetingId
+      description: get user's invitations by meeting id
+      responses:
+        '200':
+          description: list of all invitations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    parameters:
+      - name: userId
+        description: user id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
+      - name: meetingId
+        description: meeting id
+        required: true
+        in: path
+        schema:
+          type: integer
+          format: int64
 
 components:
   schemas:
@@ -260,6 +317,7 @@ components:
         - name
         - beginDateTime
         - endDateTime
+        - periodicity
       properties:
         name:
           type: string
@@ -276,6 +334,8 @@ components:
         description:
           type: string
           minLength: 1
+        periodicity:
+          $ref: '#/components/schemas/PeriodicityResponse'
     MeetingResponse:
       required:
         - id
@@ -283,6 +343,7 @@ components:
         - beginDateTime
         - endDateTime
         - owner
+        - periodicity
       properties:
         id:
           type: integer
@@ -301,6 +362,39 @@ components:
           type: string
         owner:
           $ref: '#/components/schemas/UserResponse'
+        periodicity:
+          $ref: '#/components/schemas/PeriodicityResponse'
+    InviteRequest:
+      required:
+        - userStatusOnMeeting
+      properties:
+        userStatusOnMeeting:
+          $ref: '#/components/schemas/UserStatusOnMeeting'
+    InviteResponse:
+      required:
+        - meeting
+        - invitedUser
+        - userStatusOnMeeting
+      properties:
+        meeting:
+          $ref: '#/components/schemas/MeetingResponse'
+        invitedUser:
+          $ref: '#/components/schemas/UserResponse'
+        userStatusOnMeeting:
+          $ref: '#/components/schemas/UserStatusOnMeeting'
+    UserStatusOnMeeting:
+      type: string
+      enum:
+        - BUSY
+        - ONLINE
+        - OFFLINE
+    PeriodicityResponse:
+      type: string
+      enum:
+        - NONE
+        - DAY
+        - WEEK
+        - MONTH
     ErrorResponse:
       description: Error with a message
       type: object
@@ -333,3 +427,10 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/MeetingRequest'
+    InviteRequestBody:
+      description: invite details request body
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InviteRequest'

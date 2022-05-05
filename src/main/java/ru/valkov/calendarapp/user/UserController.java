@@ -7,6 +7,9 @@ import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.controller.UsersApi;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
 import ru.valkov.calendarapp.openapi.model.MeetingResponse;
+import ru.valkov.calendarapp.invite.InvitationService;
+import ru.valkov.calendarapp.openapi.controller.UsersApi;
+import ru.valkov.calendarapp.openapi.model.InviteRequest;
 import ru.valkov.calendarapp.openapi.model.UserRequest;
 import ru.valkov.calendarapp.openapi.model.UserResponse;
 
@@ -20,6 +23,7 @@ import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResul
 public class UserController implements UsersApi {
     private final UserService userService;
     private final MeetingService meetingService;
+    private final InvitationService invitationService;
 
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
@@ -69,5 +73,14 @@ public class UserController implements UsersApi {
     @Override
     public ResponseEntity<Void> updateMeeting(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
         return wrapWithoutResult(meetingService::updateById, usersId, meetingId, meetingRequest);
+
+    @Override
+    public ResponseEntity<Object> createInvitation(Long userId, Long meetingId, InviteRequest inviteRequest) {
+        return wrap(invitationService::createInvitation, userId, meetingId, inviteRequest);
+    }
+
+    @Override
+    public ResponseEntity<List<UserResponse>> getInvitationByUserIdAndMeetingId(Long userId, Long meetingId) {
+        return UsersApi.super.getInvitationByUserIdAndMeetingId(userId, meetingId);
     }
 }

@@ -7,23 +7,33 @@ import lombok.NoArgsConstructor;
 import ru.valkov.calendarapp.meeting.Meeting;
 import ru.valkov.calendarapp.user.User;
 import ru.valkov.calendarapp.user.UserStatus;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Builder
-@Table(name = "invite")
-public class Invite {
+@Table(name = "invitation")
+public class Invitation {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "invite_id_sequence"
+            generator = "invitation_id_sequence"
     )
     @SequenceGenerator(
-            name = "invite_id_sequence",
-            sequenceName = "invite_id_sequence",
+            name = "invitation_id_sequence",
+            sequenceName = "invitation_id_sequence",
             allocationSize = 1
     )
     private Long id;
@@ -34,7 +44,7 @@ public class Invite {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
     @Enumerated(EnumType.STRING)
-    private MeetingDecisionStatus mdStatus;
+    private InvitationStatus invitationStatus;
     @Enumerated(EnumType.STRING)
-    private UserStatus userStatus;
+    private UserStatus userStatusOnMeeting;
 }

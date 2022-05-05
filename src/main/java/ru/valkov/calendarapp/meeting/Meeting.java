@@ -34,5 +34,5 @@ public class Meeting {
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
     @Enumerated(EnumType.STRING)
-    private PeriodicityStatus status;
+    private Periodicity periodicity;
 }
