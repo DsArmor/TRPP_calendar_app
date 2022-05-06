@@ -2,14 +2,15 @@ package ru.valkov.calendarapp.meeting;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.valkov.calendarapp.exceptions.BadRequestException;
 import ru.valkov.calendarapp.exceptions.NotFoundException;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
 import ru.valkov.calendarapp.openapi.model.MeetingResponse;
-import ru.valkov.calendarapp.openapi.model.UserResponse;
 import ru.valkov.calendarapp.user.User;
 import ru.valkov.calendarapp.user.UserMapper;
 import ru.valkov.calendarapp.user.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,38 +24,50 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingMapper meetingMapper;
 
-    public Long createMeeting(MeetingRequest meetingRequest) {
-        User user = userMapper.map(userService.getById(meetingRequest.getOwnerId()));
+    public Long createMeeting(Long usersId, MeetingRequest meetingRequest) {
+        validateMeetingTime(meetingRequest.getBeginDateTime().toLocalDateTime(),
+                meetingRequest.getEndDateTime().toLocalDateTime());
+        User user = userMapper.map(userService.getById(usersId));
+        System.out.println(user);
         Meeting meeting = meetingMapper.map(meetingRequest, user);
+        System.out.println(meeting);
         meetingRepository.save(meeting);
         return meeting.getId();
     }
 
-    public List<MeetingResponse> getMeetings() {
+    public List<MeetingResponse> getMeetings(Long usersId) {
+        userService.getById(usersId);
         return meetingRepository
-                .findAll()
+                .findAllJoinUserId(usersId)
                 .stream()
                 .map(meetingMapper::map)
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(Long meetingId) {
+    public void deleteById(Long usersId, Long meetingId) { // todo удалять только встречу конкретного юзера, хотя она не зависит от usersId поэтому можно его не юзать?
         meetingRepository.deleteById(meetingId);
     }
 
-    public MeetingResponse getById(Long meetingId) {
-        return meetingRepository
-                .findById(meetingId)
-                .map(meetingMapper::map)
-                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+    public MeetingResponse getById(Long usersId, Long meetingId) {
+        return meetingMapper
+                .map(meetingRepository.findByIdJoinUserId(usersId, meetingId));
+//                .orElseThrow(() -> new NotFoundException("Meeting not found")); // как-то надо прикрутить
     }
 
-    public void updateById(Long meetingId, MeetingRequest meetingRequest) { // todo запретить изменение ownerId / надо ли менять тело MeetingRequest в котором ownerId поля больше нет?
-        User owner = userMapper.map(getById(meetingId).getOwner());
+    public void updateById(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
+        validateMeetingTime(meetingRequest.getBeginDateTime().toLocalDateTime(),
+                meetingRequest.getEndDateTime().toLocalDateTime());
+        User owner = userMapper.map(userService.getById(usersId));
         Meeting updatedMeeting = meetingMapper.map(meetingRequest, owner);
         // метод update нуждается в доработке согласно таске об оповещении юзеров измененении времени встречи
         updatedMeeting.setId(meetingId);
         meetingRepository.save(updatedMeeting);
+    }
+
+    private void validateMeetingTime(LocalDateTime begin, LocalDateTime end) throws BadRequestException {
+        if (begin.compareTo(end) > 0) {
+            throw new BadRequestException("We can't go back to the past");
+        }
     }
 
 }
