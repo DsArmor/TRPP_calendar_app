@@ -210,6 +210,43 @@ paths:
         schema:
           type: integer
           format: int64
+  /users/{userId}/meetings/filtering:
+    get:
+      operationId: getMeetingsByStartTimeAndEndTime
+      description: get all meeting with the specified time
+      responses:
+        '200':
+          description: list of all meetings with the specified time
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeetingResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      parameters:
+        - name: userId
+          description: user id
+          required: true
+          in: path
+          schema:
+            type: integer
+            format: int64
+        - name: from
+          description: start time
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          description: end time
+          in: query
+          schema:
+            type: string
+            format: date-time
   /users/{userId}/meetings/{meetingId}/invitations:
     post:
       operationId: createInvitation
@@ -236,16 +273,32 @@ paths:
           $ref: '#/components/responses/Error'
     get:
       operationId: getInvitationByUserIdAndMeetingId
-      description: get user's invitations by meeting id
+      description: get user's invitation by meeting id
       responses:
         '200':
-          description: list of all invitations
+          description: meeting invitation list
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserResponse'
+                $ref: '#/components/schemas/InviteResponse'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+    put:
+      operationId: updateInvitationByUserIdAndMeetingId
+      description: update user's invitation by meeting id
+      parameters:
+        - name: invitationStatus
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/InvitationStatusResponse'
+      responses:
+        '200':
+          description: invitation is successfully updated
         '400':
           $ref: '#/components/responses/Error'
         '403':
@@ -366,10 +419,14 @@ components:
           $ref: '#/components/schemas/PeriodicityResponse'
     InviteRequest:
       required:
+        - invitedUserId
         - userStatusOnMeeting
       properties:
         userStatusOnMeeting:
           $ref: '#/components/schemas/UserStatusOnMeeting'
+        invitedUserId:
+          type: integer
+          format: int64
     InviteResponse:
       required:
         - meeting
@@ -382,6 +439,8 @@ components:
           $ref: '#/components/schemas/UserResponse'
         userStatusOnMeeting:
           $ref: '#/components/schemas/UserStatusOnMeeting'
+        invitationStatus:
+          $ref: '#/components/schemas/InvitationStatusResponse'
     UserStatusOnMeeting:
       type: string
       enum:
@@ -405,6 +464,13 @@ components:
           type: string
           description: Error message
           minLength: 1
+    InvitationStatusResponse:
+      type: string
+      enum:
+        - ACCEPTED
+        - REJECTED
+        - QUESTIONABLE
+        - NEW
   responses:
     Error:
       description: Error

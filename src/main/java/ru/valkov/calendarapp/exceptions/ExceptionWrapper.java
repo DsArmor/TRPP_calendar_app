@@ -1,18 +1,23 @@
 package ru.valkov.calendarapp.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 
 import java.util.function.*;
 
+@Slf4j
 public class ExceptionWrapper {
     public static <T, R> ResponseEntity<R> wrap(Function<T, R> function, T arg) {
         try {
             return ResponseEntity.ok(function.apply(arg));
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -21,10 +26,13 @@ public class ExceptionWrapper {
         try {
             return ResponseEntity.ok(biFunction.apply(arg1, arg2));
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -33,12 +41,13 @@ public class ExceptionWrapper {
         try {
             return ResponseEntity.ok(function.get());
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -47,8 +56,13 @@ public class ExceptionWrapper {
         try {
             return ResponseEntity.ok(function.get(arg1, arg2, arg3));
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
+        } catch (BadRequestException e) {
+            log.error("Bad request", e);
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -58,10 +72,13 @@ public class ExceptionWrapper {
             function.accept(arg);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -71,10 +88,13 @@ public class ExceptionWrapper {
             function.accept(arg1, arg2);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -84,15 +104,22 @@ public class ExceptionWrapper {
             function.apply(arg1, arg2, arg3);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
+            log.error("Not found", e);
             return ResponseEntity.notFound().build();
         } catch (BadRequestException e) {
+            log.error("Bad request", e);
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+            log.error("Internal server error", e);
             return ResponseEntity.internalServerError().build();
         }
     }
 
   public interface TriFunction<A,B,C,R> {
         R get(A a, B b, C c);
+    }
+
+    public interface TriConsumer<A,B,C> {
+        void apply(A a, B b, C c);
     }
 }

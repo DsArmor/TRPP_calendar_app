@@ -3,7 +3,6 @@ package ru.valkov.calendarapp.meeting;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.valkov.calendarapp.exceptions.BadRequestException;
-import ru.valkov.calendarapp.exceptions.NotFoundException;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
 import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 import ru.valkov.calendarapp.user.User;
@@ -11,6 +10,7 @@ import ru.valkov.calendarapp.user.UserMapper;
 import ru.valkov.calendarapp.user.UserService;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +38,7 @@ public class MeetingService {
     public List<MeetingResponse> getMeetings(Long usersId) {
         userService.getById(usersId);
         return meetingRepository
-                .findAllJoinUserId(usersId)
+                .findAllByUserId(usersId)
                 .stream()
                 .map(meetingMapper::map)
                 .collect(Collectors.toList());
@@ -48,10 +48,8 @@ public class MeetingService {
         meetingRepository.deleteById(meetingId);
     }
 
-    public MeetingResponse getById(Long usersId, Long meetingId) {
-        return meetingMapper
-                .map(meetingRepository.findByIdJoinUserId(usersId, meetingId));
-//                .orElseThrow(() -> new NotFoundException("Meeting not found")); // как-то надо прикрутить
+    public MeetingResponse getByIdAndOwnerId(Long ownerId, Long meetingId) {
+        return meetingMapper.map(meetingRepository.findByIdAndOwnerId(ownerId, meetingId));
     }
 
     public void updateById(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
@@ -64,10 +62,19 @@ public class MeetingService {
         meetingRepository.save(updatedMeeting);
     }
 
-    private void validateMeetingTime(LocalDateTime begin, LocalDateTime end) throws BadRequestException {
-        if (begin.compareTo(end) > 0) {
+    public List<MeetingResponse> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime from, OffsetDateTime to) {
+        validateMeetingTime(from.toLocalDateTime(), to.toLocalDateTime());
+        userService.getById(userId);
+        return meetingRepository
+                .findAllByStartTimeAndEndTime(userId, from.toLocalDateTime(), to.toLocalDateTime())
+                .stream()
+                .map(meetingMapper::map)
+                .collect(Collectors.toList());
+    }
+
+    private void validateMeetingTime(LocalDateTime begin, LocalDateTime end) {
+        if (begin.isAfter(end)) {
             throw new BadRequestException("We can't go back to the past");
         }
     }
-
 }

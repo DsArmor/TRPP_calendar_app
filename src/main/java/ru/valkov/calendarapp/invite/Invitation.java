@@ -1,9 +1,6 @@
 package ru.valkov.calendarapp.invite;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.valkov.calendarapp.meeting.Meeting;
 import ru.valkov.calendarapp.user.User;
 import ru.valkov.calendarapp.user.UserStatus;
@@ -23,6 +20,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 @Table(name = "invitation")
 public class Invitation {
@@ -38,11 +36,11 @@ public class Invitation {
     )
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meeting_id", referencedColumnName = "id")
+    @JoinColumn(name = "meeting_id")
     private Meeting meeting;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User invitedUser;
     @Enumerated(EnumType.STRING)
     private InvitationStatus invitationStatus;
     @Enumerated(EnumType.STRING)

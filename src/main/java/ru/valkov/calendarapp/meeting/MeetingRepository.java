@@ -4,17 +4,29 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
-    @Query("select m from Meeting m where m.owner.id = :id")
-    List<Meeting> findAllJoinUserId(@Param("id") Long id);
+    @Query(value = """
+                SELECT m FROM Meeting m
+                LEFT JOIN Invitation i ON m.id = i.meeting.id
+                WHERE (i.invitedUser.id = :userId AND i.invitationStatus != ru.valkov.calendarapp.invite.InvitationStatus.REJECTED)
+                       OR m.owner.id = :userId
+            """)
+    List<Meeting> findAllByUserId(@Param("userId") Long userId);
+
+    @Query(value = """
+                SELECT m FROM Meeting m
+                LEFT JOIN Invitation i ON m.id = i.meeting.id
+                WHERE ((i.invitedUser.id = :userId AND i.invitationStatus != ru.valkov.calendarapp.invite.InvitationStatus.REJECTED)
+                       OR m.owner.id = :userId) AND (m.beginDateTime >= :beginDateTime AND m.endDateTime <= :endDateTime)
+            """)
+    List<Meeting> findAllByStartTimeAndEndTime(Long userId, LocalDateTime beginDateTime, LocalDateTime endDateTime);
 
     @Query("select m from Meeting m where m.owner.id = :oId and m.id = :mId")
-    Meeting findByIdJoinUserId(@Param("oId") Long userId, @Param("mId") Long meetingId);
+    Meeting findByIdAndOwnerId(@Param("oId") Long userId, @Param("mId") Long meetingId);
 }

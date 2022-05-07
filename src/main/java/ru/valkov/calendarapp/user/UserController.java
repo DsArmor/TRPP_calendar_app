@@ -5,14 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.controller.UsersApi;
-import ru.valkov.calendarapp.openapi.model.MeetingRequest;
-import ru.valkov.calendarapp.openapi.model.MeetingResponse;
+import ru.valkov.calendarapp.openapi.model.*;
 import ru.valkov.calendarapp.invite.InvitationService;
-import ru.valkov.calendarapp.openapi.controller.UsersApi;
-import ru.valkov.calendarapp.openapi.model.InviteRequest;
-import ru.valkov.calendarapp.openapi.model.UserRequest;
-import ru.valkov.calendarapp.openapi.model.UserResponse;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrap;
@@ -67,7 +63,7 @@ public class UserController implements UsersApi {
 
     @Override
     public ResponseEntity<MeetingResponse> getMeetingById(Long usersId, Long meetingId) {
-        return wrap(meetingService::getById, usersId,  meetingId);
+        return wrap(meetingService::getByIdAndOwnerId, usersId,  meetingId);
     }
 
     @Override
@@ -80,7 +76,17 @@ public class UserController implements UsersApi {
     }
 
     @Override
-    public ResponseEntity<List<UserResponse>> getInvitationByUserIdAndMeetingId(Long userId, Long meetingId) {
-        return UsersApi.super.getInvitationByUserIdAndMeetingId(userId, meetingId);
+    public ResponseEntity<InviteResponse> getInvitationByUserIdAndMeetingId(Long userId, Long meetingId) {
+        return wrap(invitationService::getByUserIdAndMeetingId, userId, meetingId);
+    }
+
+    @Override
+    public ResponseEntity<Void> updateInvitationByUserIdAndMeetingId(Long userId, Long meetingId, InvitationStatusResponse invitationStatus) {
+        return wrapWithoutResult(invitationService::updateInvitationByUserIdAndMeetingId, userId, meetingId, invitationStatus);
+    }
+
+    @Override
+    public ResponseEntity<List<MeetingResponse>> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime from, OffsetDateTime to) {
+        return wrap(meetingService::getMeetingsByStartTimeAndEndTime, userId, from, to);
     }
 }

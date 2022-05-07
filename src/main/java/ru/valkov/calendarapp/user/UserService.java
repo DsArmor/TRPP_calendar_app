@@ -17,8 +17,9 @@ public class UserService {
     private final UserMapper userMapper;
 
     public Long createUser(UserRequest userRequest) {
-        if (userRepository.existsByEmail(userRequest.getEmail()))
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new BadRequestException("This email exists");
+        }
         User user = userMapper.map(userRequest);
         userRepository.save(user);
         return user.getId();
@@ -44,8 +45,9 @@ public class UserService {
     }
 
     public void updateById(Long userId, UserRequest userRequest){
-        if (userRepository.existsByEmail(userRequest.getEmail()))
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new BadRequestException("This email exists");
+        }
         User updatedUser = userMapper.map(userRequest);
         updatedUser.setId(userId);
         userRepository.save(updatedUser);
