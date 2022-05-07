@@ -121,9 +121,8 @@ paths:
                   - id
                 properties:
                   id:
-                    type: integer
-                    format: int64
-                    description: id of saved meeting
+                    type: string
+                    description: groud id of saved meetings
         '400':
           $ref: '#/components/responses/Error'
         '500':
@@ -314,12 +313,11 @@ paths:
           type: integer
           format: int64
       - name: meetingId
-        description: meeting id
+        description: meeting group id
         required: true
         in: path
         schema:
-          type: integer
-          format: int64
+          type: string
 
 components:
   schemas:
@@ -371,6 +369,7 @@ components:
         - beginDateTime
         - endDateTime
         - periodicity
+        - until
       properties:
         name:
           type: string
@@ -389,18 +388,25 @@ components:
           minLength: 1
         periodicity:
           $ref: '#/components/schemas/PeriodicityResponse'
+        until:
+          type: string
+          format: date
     MeetingResponse:
       required:
         - id
+        - groupId
         - name
         - beginDateTime
         - endDateTime
         - owner
         - periodicity
+        - until
       properties:
         id:
           type: integer
           format: int64
+        groupId:
+          type: string
         name:
           type: string
         beginDateTime:
@@ -417,36 +423,29 @@ components:
           $ref: '#/components/schemas/UserResponse'
         periodicity:
           $ref: '#/components/schemas/PeriodicityResponse'
+        until:
+          type: string
+          format: date
     InviteRequest:
       required:
         - invitedUserId
-        - userStatusOnMeeting
       properties:
-        userStatusOnMeeting:
-          $ref: '#/components/schemas/UserStatusOnMeeting'
         invitedUserId:
           type: integer
           format: int64
     InviteResponse:
       required:
-        - meeting
+        - meetings
         - invitedUser
-        - userStatusOnMeeting
       properties:
-        meeting:
-          $ref: '#/components/schemas/MeetingResponse'
+        meetings:
+          type: array
+          items:
+            $ref: '#/components/schemas/MeetingResponse'
         invitedUser:
           $ref: '#/components/schemas/UserResponse'
-        userStatusOnMeeting:
-          $ref: '#/components/schemas/UserStatusOnMeeting'
         invitationStatus:
           $ref: '#/components/schemas/InvitationStatusResponse'
-    UserStatusOnMeeting:
-      type: string
-      enum:
-        - BUSY
-        - ONLINE
-        - OFFLINE
     PeriodicityResponse:
       type: string
       enum:

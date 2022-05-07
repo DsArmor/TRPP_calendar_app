@@ -3,18 +3,9 @@ package ru.valkov.calendarapp.invite;
 import lombok.*;
 import ru.valkov.calendarapp.meeting.Meeting;
 import ru.valkov.calendarapp.user.User;
-import ru.valkov.calendarapp.user.UserStatus;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -35,14 +26,20 @@ public class Invitation {
             allocationSize = 1
     )
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meeting_id")
-    private Meeting meeting;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "invitation_meeting",
+            joinColumns = {
+                    @JoinColumn(name = "invitation_id", referencedColumnName = "id")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "meeting_id", referencedColumnName = "id")
+            }
+    )
+    private Set<Meeting> meetings;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User invitedUser;
     @Enumerated(EnumType.STRING)
     private InvitationStatus invitationStatus;
-    @Enumerated(EnumType.STRING)
-    private UserStatus userStatusOnMeeting;
 }

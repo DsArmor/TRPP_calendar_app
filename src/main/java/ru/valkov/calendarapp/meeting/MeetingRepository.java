@@ -10,23 +10,28 @@ import java.util.List;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
-
-    @Query(value = """
-                SELECT m FROM Meeting m
-                LEFT JOIN Invitation i ON m.id = i.meeting.id
-                WHERE (i.invitedUser.id = :userId AND i.invitationStatus != ru.valkov.calendarapp.invite.InvitationStatus.REJECTED)
-                       OR m.owner.id = :userId
-            """)
-    List<Meeting> findAllByUserId(@Param("userId") Long userId);
-
-    @Query(value = """
-                SELECT m FROM Meeting m
-                LEFT JOIN Invitation i ON m.id = i.meeting.id
-                WHERE ((i.invitedUser.id = :userId AND i.invitationStatus != ru.valkov.calendarapp.invite.InvitationStatus.REJECTED)
-                       OR m.owner.id = :userId) AND (m.beginDateTime >= :beginDateTime AND m.endDateTime <= :endDateTime)
-            """)
+    @Query(
+            value = """
+            SELECT * FROM meeting
+            LEFT JOIN invitation_meeting im on meeting.id = im.meeting_id
+            LEFT JOIN invitation i on im.invitation_id = i.id
+            WHERE ((i.user_id = :userId AND i.invitation_status != 'REJECTED') OR (meeting.owner_id = :userId)) AND
+                meeting.begin_date_time >= :beginDateTime AND meeting.end_date_time <= :endDateTime
+            """, nativeQuery = true)
     List<Meeting> findAllByStartTimeAndEndTime(Long userId, LocalDateTime beginDateTime, LocalDateTime endDateTime);
 
-    @Query("select m from Meeting m where m.owner.id = :oId and m.id = :mId")
-    Meeting findByIdAndOwnerId(@Param("oId") Long userId, @Param("mId") Long meetingId);
+    @Query(
+            value = """
+                SELECT * FROM meeting
+                LEFT JOIN invitation_meeting im on meeting.id = im.meeting_id
+                LEFT JOIN invitation i on im.invitation_id = i.id
+                WHERE owner_id = :userId OR (i.user_id = :userId AND i.invitation_status != 'REJECTED')
+            """, nativeQuery = true)
+    List<Meeting> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT m FROM Meeting m WHERE m.owner.id = :userId AND m.id = :meetingId")
+    Meeting findByIdAndOwnerId(Long userId, Long meetingId);
+
+    @Query("SELECT m FROM Meeting m WHERE m.owner.id = :ownerId AND m.groupId = :groupId")
+    List<Meeting> findAllByIdAndGroupId(Long ownerId, String groupId);
 }

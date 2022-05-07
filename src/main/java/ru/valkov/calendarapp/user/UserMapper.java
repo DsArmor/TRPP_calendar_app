@@ -14,7 +14,6 @@ public class UserMapper {
                 .firstName(request.getFirstName())
                 .middleName(request.getMiddleName())
                 .lastName(request.getLastName( ))
-                .status(UserStatus.ONLINE)
                 .build();
     }
 
@@ -34,7 +33,6 @@ public class UserMapper {
                 .firstName(response.getFirstName())
                 .middleName(response.getMiddleName())
                 .lastName(response.getLastName( ))
-                .status(UserStatus.ONLINE)
                 .build();
     }
 }

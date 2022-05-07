@@ -71,18 +71,18 @@ public class UserController implements UsersApi {
         return wrapWithoutResult(meetingService::updateById, usersId, meetingId, meetingRequest);
     }
     @Override
-    public ResponseEntity<Object> createInvitation(Long userId, Long meetingId, InviteRequest inviteRequest) {
-        return wrap(invitationService::createInvitation, userId, meetingId, inviteRequest);
+    public ResponseEntity<Object> createInvitation(Long userId, String meetingGroupId, InviteRequest inviteRequest) {
+        return wrap(invitationService::createInvitation, userId, meetingGroupId, inviteRequest);
     }
 
     @Override
-    public ResponseEntity<InviteResponse> getInvitationByUserIdAndMeetingId(Long userId, Long meetingId) {
-        return wrap(invitationService::getByUserIdAndMeetingId, userId, meetingId);
+    public ResponseEntity<InviteResponse> getInvitationByUserIdAndMeetingId(Long userId, String meetingGroupId) {
+        return wrap(invitationService::getByUserIdAndMeetingId, userId, meetingGroupId);
     }
 
     @Override
-    public ResponseEntity<Void> updateInvitationByUserIdAndMeetingId(Long userId, Long meetingId, InvitationStatusResponse invitationStatus) {
-        return wrapWithoutResult(invitationService::updateInvitationByUserIdAndMeetingId, userId, meetingId, invitationStatus);
+    public ResponseEntity<Void> updateInvitationByUserIdAndMeetingId(Long userId, String meetingGroupId, InvitationStatusResponse invitationStatus) {
+        return wrapWithoutResult(invitationService::updateInvitationByUserIdAndMeetingId, userId, meetingGroupId, invitationStatus);
     }
 
     @Override

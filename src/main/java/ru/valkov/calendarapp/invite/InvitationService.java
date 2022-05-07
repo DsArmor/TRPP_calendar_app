@@ -3,13 +3,12 @@ package ru.valkov.calendarapp.invite;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.valkov.calendarapp.exceptions.NotFoundException;
-import ru.valkov.calendarapp.meeting.MeetingMapper;
 import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.model.*;
-import ru.valkov.calendarapp.user.UserMapper;
 import ru.valkov.calendarapp.user.UserService;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,16 +19,16 @@ public class InvitationService {
     private final UserService userService;
     private final MeetingService meetingService;
 
-    public Long createInvitation(Long ownerId, Long meetingId, InviteRequest inviteRequest) {
-        MeetingResponse meetingResponse = meetingService.getByIdAndOwnerId(ownerId, meetingId);
+    public Long createInvitation(Long ownerId, String groupId, InviteRequest inviteRequest) {
+        List<MeetingResponse> meetingResponses = meetingService.getByGroupIdAndOwnerId(ownerId, groupId);
         UserResponse invitedUser = userService.getById(inviteRequest.getInvitedUserId());
-        Invitation invitation = invitationMapper.map(inviteRequest, invitedUser, meetingResponse);
+        Invitation invitation = invitationMapper.map(invitedUser, meetingResponses);
         return invitationRepository.save(invitation).getId();
     }
 
-    public InviteResponse getByUserIdAndMeetingId(Long userId, Long meetingId) {
+    public InviteResponse getByUserIdAndMeetingId(Long userId, String meetingGroupId) {
         return invitationRepository
-                .findByMeetingIdAndUserId(userId, meetingId)
+                .findByMeetingGroupIdAndUserId(userId, meetingGroupId)
                 .stream()
                 .map(invitationMapper::map)
                 .findAny()
@@ -37,10 +36,10 @@ public class InvitationService {
     }
 
     @Transactional
-    public void updateInvitationByUserIdAndMeetingId(Long userId, Long meetingId, InvitationStatusResponse invitationStatus) {
+    public void updateInvitationByUserIdAndMeetingId(Long userId, String meetingGroupId, InvitationStatusResponse invitationStatus) {
         InvitationStatus status = invitationMapper.mapInvitationStatus(invitationStatus);
         Optional<Invitation> invitation = invitationRepository
-                .findByMeetingIdAndUserId(userId, meetingId)
+                .findByMeetingGroupIdAndUserId(userId, meetingGroupId)
                 .stream()
                 .findAny();
         if (invitation.isPresent()) {

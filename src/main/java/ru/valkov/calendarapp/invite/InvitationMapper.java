@@ -6,7 +6,8 @@ import ru.valkov.calendarapp.meeting.MeetingMapper;
 import ru.valkov.calendarapp.openapi.model.*;
 import ru.valkov.calendarapp.user.User;
 import ru.valkov.calendarapp.user.UserMapper;
-import ru.valkov.calendarapp.user.UserStatus;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -14,12 +15,11 @@ public class InvitationMapper {
     private final UserMapper userMapper;
     private final MeetingMapper meetingMapper;
 
-    public Invitation map(InviteRequest inviteRequest, UserResponse invitedUser, MeetingResponse meeting) {
+    public Invitation map(UserResponse invitedUser, List<MeetingResponse> meetings) {
         User user = userMapper.map(invitedUser);
         return Invitation.builder()
                 .invitedUser(user)
-                .meeting(meetingMapper.map(meeting, user))
-                .userStatusOnMeeting(mapUserStatus(inviteRequest.getUserStatusOnMeeting()))
+                .meetings(meetingMapper.mapAll(meetings, user))
                 .invitationStatus(InvitationStatus.NEW)
                 .build();
     }
@@ -27,19 +27,9 @@ public class InvitationMapper {
     public InviteResponse map(Invitation invitation) {
         return new InviteResponse()
                 .invitedUser(userMapper.map(invitation.getInvitedUser()))
-                .meeting(meetingMapper.map(invitation.getMeeting()))
-                .userStatusOnMeeting(mapUserStatus(invitation.getUserStatusOnMeeting()))
+                .meetings(meetingMapper.mapAll(invitation.getMeetings()))
                 .invitationStatus(mapInvitationStatus(invitation.getInvitationStatus()));
     }
-
-    public UserStatus mapUserStatus(UserStatusOnMeeting status) {
-        return UserStatus.valueOf(status.getValue());
-    }
-
-    public UserStatusOnMeeting mapUserStatus(UserStatus status) {
-        return UserStatusOnMeeting.valueOf(status.name());
-    }
-
     public InvitationStatusResponse mapInvitationStatus(InvitationStatus status) {
         return InvitationStatusResponse.valueOf(status.name());
     }

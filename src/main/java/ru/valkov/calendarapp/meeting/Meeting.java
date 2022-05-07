@@ -3,6 +3,7 @@ package ru.valkov.calendarapp.meeting;
 import lombok.*;
 import ru.valkov.calendarapp.user.User;
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @Table(name = "meeting")
-public class Meeting {
+public class Meeting implements Cloneable {
 
     @Id
     @GeneratedValue(
@@ -25,6 +26,7 @@ public class Meeting {
     )
     @Column(unique = true, nullable = false)
     private Long id;
+    private String groupId;
     private String name;
     private LocalDateTime beginDateTime;
     private LocalDateTime endDateTime;
@@ -35,4 +37,10 @@ public class Meeting {
     private User owner;
     @Enumerated(EnumType.STRING)
     private Periodicity periodicity;
+    private LocalDate until;
+
+    @Override
+    protected Meeting clone() throws CloneNotSupportedException {
+        return (Meeting) super.clone();
+    }
 }
