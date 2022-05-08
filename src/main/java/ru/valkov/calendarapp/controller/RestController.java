@@ -1,4 +1,4 @@
-package ru.valkov.calendarapp.user;
+package ru.valkov.calendarapp.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +7,7 @@ import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.controller.UsersApi;
 import ru.valkov.calendarapp.openapi.model.*;
 import ru.valkov.calendarapp.invite.InvitationService;
+import ru.valkov.calendarapp.user.UserService;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -16,11 +17,12 @@ import static ru.valkov.calendarapp.exceptions.ExceptionWrapper.wrapWithoutResul
 
 @RequiredArgsConstructor
 @Controller
-public class UserController implements UsersApi {
+public class RestController implements UsersApi {
     private final UserService userService;
     private final MeetingService meetingService;
     private final InvitationService invitationService;
 
+    /* Users REST methods */
     @Override
     public ResponseEntity<Object> createUser(UserRequest userRequest) {
         return wrap(userService::createUser, userRequest);
@@ -46,6 +48,7 @@ public class UserController implements UsersApi {
         return wrapWithoutResult(userService::updateById, userId, userRequest);
     }
 
+    /* Meetings REST methods */
     @Override
     public ResponseEntity<Object> createMeeting(Long usersId, MeetingRequest meetingRequest) {
         return wrap(meetingService::createMeeting, usersId, meetingRequest);
@@ -57,19 +60,26 @@ public class UserController implements UsersApi {
     }
 
     @Override
-    public ResponseEntity<Void> deleteMeetingById(Long usersId, Long meetingId) {
-        return wrapWithoutResult(meetingService::deleteById, usersId,  meetingId);
+    public ResponseEntity<Void> deleteMeetingByGroupId(Long usersId, String meetingGroupId) {
+        return wrapWithoutResult(meetingService::deleteByOwnerIdAndGroupId, usersId,  meetingGroupId);
     }
 
     @Override
-    public ResponseEntity<MeetingResponse> getMeetingById(Long usersId, Long meetingId) {
-        return wrap(meetingService::getByIdAndOwnerId, usersId,  meetingId);
+    public ResponseEntity<List<MeetingResponse>> getMeetingByGroupId(Long usersId, String meetingGroupId) {
+        return wrap(meetingService::getByOwnerIdAndGroupId, usersId,  meetingGroupId);
     }
 
     @Override
-    public ResponseEntity<Void> updateMeeting(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
-        return wrapWithoutResult(meetingService::updateById, usersId, meetingId, meetingRequest);
+    public ResponseEntity<Void> updateMeeting(Long usersId, String meetingGroupId, MeetingRequest meetingRequest) {
+        return wrapWithoutResult(meetingService::updateByOwnerIdAndGroupId, usersId, meetingGroupId, meetingRequest);
     }
+
+    @Override
+    public ResponseEntity<List<MeetingResponse>> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime from, OffsetDateTime to) {
+        return wrap(meetingService::getMeetingsByStartTimeAndEndTime, userId, from, to);
+    }
+
+    /* Invitations REST methods */
     @Override
     public ResponseEntity<Object> createInvitation(Long userId, String meetingGroupId, InviteRequest inviteRequest) {
         return wrap(invitationService::createInvitation, userId, meetingGroupId, inviteRequest);
@@ -83,10 +93,5 @@ public class UserController implements UsersApi {
     @Override
     public ResponseEntity<Void> updateInvitationByUserIdAndMeetingId(Long userId, String meetingGroupId, InvitationStatusResponse invitationStatus) {
         return wrapWithoutResult(invitationService::updateInvitationByUserIdAndMeetingId, userId, meetingGroupId, invitationStatus);
-    }
-
-    @Override
-    public ResponseEntity<List<MeetingResponse>> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime from, OffsetDateTime to) {
-        return wrap(meetingService::getMeetingsByStartTimeAndEndTime, userId, from, to);
     }
 }

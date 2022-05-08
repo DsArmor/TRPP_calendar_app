@@ -10,6 +10,7 @@ import ru.valkov.calendarapp.user.UserMapper;
 
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,9 +22,9 @@ public class MeetingMapper {
     private final UserMapper userMapper;
     private final static ZoneOffset zone = ZoneOffset.UTC;
 
-    public Meeting map(MeetingRequest request, User user) {
+    public Meeting map(MeetingRequest request, User user, Optional<String> groupId) {
         return Meeting.builder()
-                .groupId(UUID.randomUUID().toString())
+                .groupId(groupId.orElse(UUID.randomUUID().toString()))
                 .name(request.getName())
                 .beginDateTime(request.getBeginDateTime().toLocalDateTime())
                 .endDateTime(request.getEndDateTime().toLocalDateTime())

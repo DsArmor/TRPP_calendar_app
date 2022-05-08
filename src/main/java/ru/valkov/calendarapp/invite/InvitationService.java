@@ -3,6 +3,8 @@ package ru.valkov.calendarapp.invite;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.valkov.calendarapp.exceptions.NotFoundException;
+import ru.valkov.calendarapp.mail.sender.EmailSender;
+import ru.valkov.calendarapp.mail.sender.EmailSenderAdapter;
 import ru.valkov.calendarapp.meeting.MeetingService;
 import ru.valkov.calendarapp.openapi.model.*;
 import ru.valkov.calendarapp.user.UserService;
@@ -18,12 +20,16 @@ public class InvitationService {
     private final InvitationMapper invitationMapper;
     private final UserService userService;
     private final MeetingService meetingService;
+    private final EmailSenderAdapter emailSenderAdapter;
 
+    @Transactional
     public Long createInvitation(Long ownerId, String groupId, InviteRequest inviteRequest) {
         List<MeetingResponse> meetingResponses = meetingService.getByGroupIdAndOwnerId(ownerId, groupId);
         UserResponse invitedUser = userService.getById(inviteRequest.getInvitedUserId());
         Invitation invitation = invitationMapper.map(invitedUser, meetingResponses);
-        return invitationRepository.save(invitation).getId();
+        invitationRepository.save(invitation);
+        emailSenderAdapter.sendInvitationEmail(invitation);
+        return invitation.getId();
     }
 
     public InviteResponse getByUserIdAndMeetingId(Long userId, String meetingGroupId) {

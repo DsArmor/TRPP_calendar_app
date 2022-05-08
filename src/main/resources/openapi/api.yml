@@ -153,15 +153,17 @@ paths:
           format: int64
   /users/{userId}/meetings/{meetingId}:
     get:
-      operationId: getMeetingById
-      description: get meeting by id
+      operationId: getMeetingByGroupId
+      description: get meeting by group id
       responses:
         '200':
           description: specified meeting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeetingResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeetingResponse'
         '400':
           $ref: '#/components/responses/Error'
         '404':
@@ -169,11 +171,11 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
     delete:
-      operationId: deleteMeetingById
-      description: delete meeting by id
+      operationId: deleteMeetingByGroupId
+      description: delete meeting by group id
       responses:
         '200':
-          description: meeting is deleted
+          description: meetings is (are) deleted
         '400':
           $ref: '#/components/responses/Error'
         '404':
@@ -182,7 +184,7 @@ paths:
           $ref: '#/components/responses/Error'
     put:
       operationId: updateMeeting
-      description: update meeting by id
+      description: update meeting by group id
       requestBody:
         $ref: '#/components/requestBodies/MeetingRequestBody'
       responses:
@@ -207,8 +209,7 @@ paths:
         required: true
         in: path
         schema:
-          type: integer
-          format: int64
+          type: string
   /users/{userId}/meetings/filtering:
     get:
       operationId: getMeetingsByStartTimeAndEndTime

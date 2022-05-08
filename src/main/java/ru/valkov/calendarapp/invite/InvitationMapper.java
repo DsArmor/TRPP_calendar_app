@@ -20,7 +20,7 @@ public class InvitationMapper {
         return Invitation.builder()
                 .invitedUser(user)
                 .meetings(meetingMapper.mapAll(meetings, user))
-                .invitationStatus(InvitationStatus.NEW)
+                .invitationStatus(InvitationStatus.QUESTIONABLE)
                 .build();
     }
 

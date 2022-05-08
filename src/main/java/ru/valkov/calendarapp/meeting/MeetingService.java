@@ -2,15 +2,19 @@ package ru.valkov.calendarapp.meeting;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import ru.valkov.calendarapp.exceptions.BadRequestException;
+import ru.valkov.calendarapp.invite.Invitation;
+import ru.valkov.calendarapp.invite.InvitationRepository;
+import ru.valkov.calendarapp.invite.InvitationStatus;
+import ru.valkov.calendarapp.mail.sender.EmailSenderAdapter;
 import ru.valkov.calendarapp.openapi.model.MeetingRequest;
 import ru.valkov.calendarapp.openapi.model.MeetingResponse;
 import ru.valkov.calendarapp.user.User;
 import ru.valkov.calendarapp.user.UserMapper;
 import ru.valkov.calendarapp.user.UserService;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -18,6 +22,7 @@ import java.time.Period;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,18 +34,22 @@ public class MeetingService {
     private final UserMapper userMapper;
     private final MeetingRepository meetingRepository;
     private final MeetingMapper meetingMapper;
+    private final InvitationRepository invitationRepository;
+    private final EmailSenderAdapter emailSenderAdapter;
 
+    @Transactional
     public String createMeeting(Long usersId, MeetingRequest meetingRequest) {
         validateMeetingTime(meetingRequest.getUntil(), meetingRequest.getBeginDateTime().toLocalDateTime(),
                 meetingRequest.getEndDateTime().toLocalDateTime());
         User user = userMapper.map(userService.getById(usersId));
-        Meeting meeting = meetingMapper.map(meetingRequest, user);
-        saveAll(meeting);
+        Meeting meeting = meetingMapper.map(meetingRequest, user, Optional.empty());
+        List<Meeting> meetings = generateMeetings(meeting);
+        meetingRepository.saveAll(meetings);
         return meeting.getGroupId();
     }
 
     @SneakyThrows
-    private void saveAll(Meeting meeting) {
+    private List<Meeting> generateMeetings(Meeting meeting) {
         List<Meeting> meetings = new ArrayList<>();
         meetings.add(meeting);
         if (meeting.getPeriodicity() != Periodicity.NONE) {
@@ -56,7 +65,7 @@ public class MeetingService {
                 meetings.add(newMeeting);
             }
         }
-        meetingRepository.saveAll(meetings);
+        return meetings;
     }
 
     private boolean canAddOneMoreMeeting(Meeting meeting, LocalDateTime nextMeetingBeginDateTime) {
@@ -81,25 +90,35 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteById(Long usersId, Long meetingId) { // todo удалять только встречу конкретного юзера, хотя она не зависит от usersId поэтому можно его не юзать?
-        meetingRepository.deleteById(meetingId);
+    public void deleteByOwnerIdAndGroupId(Long ownerId, String groupId) {
+        meetingRepository.deleteByOwnerIdAndGroupId(ownerId, groupId);
     }
 
-    public MeetingResponse getByIdAndOwnerId(Long ownerId, Long meetingId) {
-        return meetingMapper.map(meetingRepository.findByIdAndOwnerId(ownerId, meetingId));
+    public List<MeetingResponse> getByOwnerIdAndGroupId(Long ownerId, String meetingId) {
+        return meetingMapper.mapAll(meetingRepository.findAllByOwnerIdAndGroupId(ownerId, meetingId));
     }
 
     public List<MeetingResponse> getByGroupIdAndOwnerId(Long ownerId, String groupId) {
         return meetingMapper.mapAll(meetingRepository.findAllByIdAndGroupId(ownerId, groupId));
     }
 
-    public void updateById(Long usersId, Long meetingId, MeetingRequest meetingRequest) {
+    @Transactional
+    public void updateByOwnerIdAndGroupId(Long ownerId, String groupId, MeetingRequest meetingRequest) {
         validateMeetingTime(meetingRequest.getBeginDateTime().toLocalDateTime(), meetingRequest.getEndDateTime().toLocalDateTime());
-        User owner = userMapper.map(userService.getById(usersId));
-        Meeting updatedMeeting = meetingMapper.map(meetingRequest, owner);
-        // метод update нуждается в доработке согласно таске об оповещении юзеров измененении времени встречи
-        updatedMeeting.setId(meetingId);
-        meetingRepository.save(updatedMeeting);
+        User owner = userMapper.map(userService.getById(ownerId));
+        Meeting updatedMeeting = meetingMapper.map(meetingRequest, owner, Optional.of(groupId));
+        List<Meeting> meetingsToSave = generateMeetings(updatedMeeting);
+        List<Long> ids = meetingRepository.getAllIdsByOwnerIdAndGroupIdOrderByBeginDateTime(ownerId, groupId);
+        if (meetingsToSave.size() != ids.size()) {
+            throw new RuntimeException("Something went wrong during updating meetings");
+        }
+        for (int i = 0; i < meetingsToSave.size(); i++) {
+            meetingsToSave.get(i).setId(ids.get(i));
+        }
+        List<Invitation> affectedInvitations = invitationRepository.findAllByMeetingGroupId(groupId);
+        affectedInvitations.forEach(invitation -> invitation.setInvitationStatus(InvitationStatus.QUESTIONABLE));
+        meetingRepository.saveAll(meetingsToSave);
+        emailSenderAdapter.sendInvitationEmails(affectedInvitations);
     }
 
     public List<MeetingResponse> getMeetingsByStartTimeAndEndTime(Long userId, OffsetDateTime beginTime, OffsetDateTime endTime) {

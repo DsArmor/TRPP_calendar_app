@@ -40,7 +40,7 @@ public class Meeting implements Cloneable {
     private LocalDate until;
 
     @Override
-    protected Meeting clone() throws CloneNotSupportedException {
+    public Meeting clone() throws CloneNotSupportedException {
         return (Meeting) super.clone();
     }
 }
