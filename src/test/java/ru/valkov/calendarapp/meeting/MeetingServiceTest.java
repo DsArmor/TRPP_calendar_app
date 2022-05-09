@@ -80,14 +80,6 @@ class MeetingServiceTest {
                 .deleteByOwnerIdAndGroupId(ownerId, groupId);
     }
 
-    @Test
-    void updateByOwnerIdAndGroupId() {
-    }
-
-    @Test
-    void getMeetingsByStartTimeAndEndTime() {
-    }
-
     private User givenUser() {
         return User.builder().build();
     }
